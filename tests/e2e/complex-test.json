@@ -1,0 +1,52 @@
+{
+    "name": "Complex E2E Test",
+    "payload": {
+        "method": "flickr.test.echo",
+        "params": {
+            "foo": "bar",
+            "nested": {
+                "a": 1,
+                "b": 2
+            },
+            "array": [
+                1,
+                2,
+                3
+            ]
+        },
+        "user_id": "user-e2e-complex",
+        "meta": {
+            "test_id": "complex-1",
+            "source": "e2e-tool",
+            "context": {
+                "env": "test"
+            }
+        }
+    },
+    "validations": [
+        {
+            "description": "Job state should be completed",
+            "type": "equals",
+            "path": "state",
+            "expected": "completed"
+        },
+        {
+            "description": "Result foo should match",
+            "type": "equals",
+            "path": "result.foo._content",
+            "expected": "bar"
+        },
+        {
+            "description": "Meta test_id should match",
+            "type": "equals",
+            "path": "meta.test_id",
+            "expected": "complex-1"
+        },
+        {
+            "description": "Meta context env should match",
+            "type": "equals",
+            "path": "meta.context.env",
+            "expected": "test"
+        }
+    ]
+}

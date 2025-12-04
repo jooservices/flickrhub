@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlickrHub - OAuth Setup</title>
+    <style>
+      :root {
+        --bg: radial-gradient(circle at 10% 20%, #1d2b62, #0f172a 40%, #0b1221 80%);
+        --panel: rgba(255, 255, 255, 0.05);
+        --panel-border: rgba(255, 255, 255, 0.08);
+        --text: #e2e8f0;
+        --muted: #9ca3af;
+        --accent: #7c6af2;
+        --danger: #f87171;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: 'Inter', 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+      .bg-shape {
+        position: fixed;
+        inset: 0;
+        background:
+          radial-gradient(circle at 20% 30%, rgba(124, 106, 242, 0.25), transparent 35%),
+          radial-gradient(circle at 80% 10%, rgba(79, 70, 229, 0.2), transparent 30%),
+          radial-gradient(circle at 50% 80%, rgba(34, 211, 238, 0.1), transparent 30%);
+        filter: blur(10px);
+        z-index: 0;
+      }
+      .shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 24px 64px;
+        position: relative;
+        z-index: 1;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 32px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        letter-spacing: 0.4px;
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #7c6af2, #4f46e5);
+        display: grid;
+        place-items: center;
+        color: white;
+        font-weight: 900;
+        font-size: 16px;
+      }
+      nav a {
+        margin-left: 16px;
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 600;
+      }
+      nav a.active {
+        color: #c7d2fe;
+        text-decoration: underline;
+      }
+      .hero {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .hero h1 {
+        margin: 0 0 8px;
+        font-size: clamp(26px, 4vw, 36px);
+      }
+      .hero p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+      }
+      .stepper {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        max-width: 640px;
+        margin: 32px auto 24px;
+        align-items: center;
+      }
+      .step {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .step .dot {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        border: 2px solid var(--panel-border);
+        display: grid;
+        place-items: center;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.04);
+        font-weight: 800;
+      }
+      .step::after {
+        content: '';
+        position: absolute;
+        top: 22px;
+        right: -50%;
+        height: 2px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .step:last-child::after {
+        display: none;
+      }
+      .step.active {
+        color: #dfe6ff;
+      }
+      .step.active .dot {
+        border-color: var(--accent);
+        background: linear-gradient(135deg, #7c6af2, #4f46e5);
+        color: white;
+        box-shadow: 0 8px 20px rgba(124, 106, 242, 0.4);
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.4);
+        max-width: 720px;
+        margin: 0 auto;
+        backdrop-filter: blur(10px);
+      }
+      .card h2 {
+        margin: 0 0 6px;
+        font-size: 22px;
+      }
+      .card p {
+        margin: 0 0 20px;
+        color: var(--muted);
+      }
+      .field {
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      label {
+        font-weight: 700;
+        color: #cbd5e1;
+        font-size: 14px;
+      }
+      input {
+        width: 100%;
+        padding: 13px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        font-size: 15px;
+      }
+      input:focus {
+        outline: 2px solid var(--accent);
+        border-color: transparent;
+        background: rgba(255, 255, 255, 0.07);
+      }
+      .helper {
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .error {
+        color: var(--danger);
+        font-size: 13px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 13px 16px;
+        background: linear-gradient(135deg, #7c6af2, #4f46e5);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        width: 100%;
+        font-size: 15px;
+        transition:
+          transform 0.1s ease,
+          box-shadow 0.1s ease;
+      }
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .btn:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+      }
+      .link {
+        color: #9abaff;
+        text-decoration: none;
+        font-weight: 600;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+      .pill {
+        background: rgba(255, 255, 255, 0.08);
+        padding: 12px 14px;
+        border-radius: 12px;
+        word-break: break-all;
+        font-family: 'SFMono-Regular', Consolas, monospace;
+        font-size: 14px;
+        width: 100%;
+      }
+      .status {
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      @media (max-width: 720px) {
+        .stepper {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .step::after {
+          display: none;
+        }
+        nav a {
+          margin-left: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-shape"></div>
+    <div class="shell">
+      <header>
+        <div class="brand">
+          <div class="logo">F</div>
+          FlickrHub
+        </div>
+        <nav>
+          <a class="active" href="#">Setup</a>
+          <a href="#" aria-disabled="true">Dashboard</a>
+          <a href="#" aria-disabled="true">Docs</a>
+        </nav>
+      </header>
+
+      <div class="hero">
+        <h1>Connect Your Flickr Account</h1>
+        <p>Register your Flickr credentials and authorize FlickrHub to manage your requests.</p>
+      </div>
+
+      <div class="stepper">
+        <div class="step" id="step-1">
+          <div class="dot">1</div>
+          <div>API Credentials</div>
+        </div>
+        <div class="step" id="step-2">
+          <div class="dot">2</div>
+          <div>Authorization</div>
+        </div>
+        <div class="step" id="step-3">
+          <div class="dot">3</div>
+          <div>Complete</div>
+        </div>
+      </div>
+
+      <div class="card" id="card"></div>
+    </div>
+
+    <script>
+      const API_BASE = window.API_BASE || `${location.origin}`;
+      let state = {
+        step: 1,
+        apiKey: '',
+        apiSecret: '',
+        oauthToken: '',
+        authorizeUrl: '',
+        verifier: '',
+        userId: '',
+        mode: 'oob',
+        loading: false,
+        status: null,
+      };
+
+      const byId = (id) => document.getElementById(id);
+
+      function setStepActive() {
+        [1, 2, 3].forEach((i) => {
+          const el = byId(`step-${i}`);
+          if (state.step === i) el.classList.add('active');
+          else el.classList.remove('active');
+        });
+      }
+
+      function showStatus() {
+        if (!state.status) return '';
+        const color = state.status.type === 'error' ? 'var(--danger)' : 'var(--muted)';
+        return `<div class="status" style="color:${color}">${state.status.message}</div>`;
+      }
+
+      function renderStep1() {
+        return `
+          <h2>Step 1: Enter API Credentials</h2>
+          <p>Get your API key and secret from <a class="link" href="https://www.flickr.com/services/apps/create/" target="_blank" rel="noreferrer">Flickr App Garden</a>.</p>
+          <div class="field">
+            <label>API Key <span style="color:#f87171">*</span></label>
+            <input id="input-api-key" placeholder="Enter your Flickr API Key" value="${state.apiKey}" />
+          </div>
+          <div class="field">
+            <label>API Secret <span style="color:#f87171">*</span></label>
+            <input id="input-api-secret" placeholder="Enter your Flickr API Secret" value="${state.apiSecret}" />
+          </div>
+          <button class="btn" id="btn-start" ${state.loading ? 'disabled' : ''}>${state.loading ? 'Starting...' : 'Continue to Authorization'}</button>
+          ${showStatus()}
+        `;
+      }
+
+      function renderStep2() {
+        return `
+          <h2>Step 2: Authorize</h2>
+          <p>Open the authorization URL and approve access. Flickr will provide a verifier code (OOB). If callback mode is enabled, you may be redirected and auto-filled.</p>
+          <div class="row">
+            <a class="btn" href="${state.authorizeUrl}" target="_blank" rel="noreferrer">Open Authorization</a>
+          </div>
+          <div class="field">
+            <label>Verifier Code <span style="color:#f87171">*</span></label>
+            <input id="input-verifier" placeholder="Paste the oauth_verifier from Flickr" value="${state.verifier}" />
+            <div class="helper">${state.mode === 'oob' ? 'OOB flow: paste the code provided by Flickr.' : 'If redirected, verifier may auto-populate.'}</div>
+          </div>
+          <button class="btn" id="btn-complete" ${state.loading ? 'disabled' : ''}>${state.loading ? 'Completing...' : 'Complete & Get user_id'}</button>
+          ${showStatus()}
+        `;
+      }
+
+      function renderStep3() {
+        return `
+          <h2>Step 3: Complete</h2>
+          <p>Use this user_id in all API requests; your token stays safe in Mongo.</p>
+          <div class="pill" id="user-id-pill">${state.userId}</div>
+          <div class="row">
+            <button class="btn" id="btn-copy" style="width:auto;min-width:180px;">Copy user_id</button>
+            <button class="btn" id="btn-new" style="width:auto;min-width:180px;background:rgba(255,255,255,0.1);">Register another</button>
+          </div>
+          <p class="helper" style="margin-top:12px;">Example curl:</p>
+          <div class="pill" style="text-align:left;">
+            curl -X POST http://localhost:3000/api/v1/flickr/rest -H "Content-Type: application/json" -d '{"method":"flickr.test.login","params":{},"user_id":"${state.userId}","target":"rest"}'
+          </div>
+          ${showStatus()}
+        `;
+      }
+
+      function render() {
+        setStepActive();
+        const card = byId('card');
+        if (state.step === 1) card.innerHTML = renderStep1();
+        if (state.step === 2) card.innerHTML = renderStep2();
+        if (state.step === 3) card.innerHTML = renderStep3();
+        attachHandlers();
+      }
+
+      function attachHandlers() {
+        if (state.step === 1) {
+          byId('input-api-key').oninput = (e) => (state.apiKey = e.target.value);
+          byId('input-api-secret').oninput = (e) => (state.apiSecret = e.target.value);
+          byId('btn-start').onclick = startAuth;
+        }
+        if (state.step === 2) {
+          byId('input-verifier').oninput = (e) => (state.verifier = e.target.value);
+          byId('btn-complete').onclick = completeAuth;
+        }
+        if (state.step === 3) {
+          byId('btn-copy').onclick = copyUserId;
+          byId('btn-new').onclick = () => {
+            state = {
+              ...state,
+              step: 1,
+              apiKey: '',
+              apiSecret: '',
+              verifier: '',
+              userId: '',
+              authorizeUrl: '',
+              oauthToken: '',
+              status: null,
+            };
+            render();
+          };
+        }
+      }
+
+      function setStatus(type, message) {
+        state.status = { type, message };
+        render();
+      }
+
+      async function startAuth() {
+        if (!state.apiKey || !state.apiSecret) {
+          setStatus('error', 'API key and secret are required.');
+          return;
+        }
+        state.loading = true;
+        render();
+        try {
+          const res = await fetch(`${API_BASE}/api/v1/auth/start`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ api_key: state.apiKey, api_secret: state.apiSecret }),
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || err.message || 'Failed to start OAuth');
+          }
+          const payload = await res.json();
+          const data = payload.data || payload; // API envelope or raw
+          state.authorizeUrl = data.authorize_url;
+          state.oauthToken = data.oauth_token;
+          state.mode = data.mode || 'oob';
+          state.step = 2;
+          state.status = { type: 'info', message: 'Authorization URL ready. Open it to authorize.' };
+        } catch (err) {
+          setStatus('error', err.message);
+        } finally {
+          state.loading = false;
+          render();
+        }
+      }
+
+      async function completeAuth() {
+        if (!state.oauthToken || !state.verifier) {
+          setStatus('error', 'Verifier is required.');
+          return;
+        }
+        state.loading = true;
+        render();
+        try {
+          const res = await fetch(`${API_BASE}/api/v1/auth/complete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ oauth_token: state.oauthToken, oauth_verifier: state.verifier }),
+          });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || err.message || 'Failed to complete OAuth');
+          }
+          const payload = await res.json();
+          const data = payload.data || payload;
+          state.userId = data.user_id;
+          state.step = 3;
+          state.status = { type: 'info', message: 'Success! Use this user_id for API calls.' };
+        } catch (err) {
+          setStatus('error', err.message);
+        } finally {
+          state.loading = false;
+          render();
+        }
+      }
+
+      function copyUserId() {
+        if (!state.userId) return;
+        navigator.clipboard.writeText(state.userId).then(() => setStatus('info', 'Copied user_id to clipboard.'));
+      }
+
+      setStepActive();
+      render();
+    </script>
+  </body>
+</html>

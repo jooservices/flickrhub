@@ -1,0 +1,32 @@
+{
+    "name": "Error Handling E2E Test",
+    "payload": {
+        "method": "flickr.test.echo",
+        "params": {
+            "force_error": "true"
+        },
+        "user_id": "user-e2e-error",
+        "meta": {
+            "test_id": "error-1"
+        }
+    },
+    "validations": [
+        {
+            "description": "Job state should be failed",
+            "type": "equals",
+            "path": "state",
+            "expected": "failed"
+        },
+        {
+            "description": "Error field should exist",
+            "type": "exists",
+            "path": "error"
+        },
+        {
+            "description": "Meta test_id should match",
+            "type": "equals",
+            "path": "meta.test_id",
+            "expected": "error-1"
+        }
+    ]
+}

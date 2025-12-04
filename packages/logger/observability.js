@@ -1,0 +1,92 @@
+const os = require('os');
+
+const defaults = {
+  apiUrl: 'http://observability.jooservices.com/api/v1/logs',
+  apiKey: '2b989e235eb50194d6ca8932955861863ac0b89a1c60634e991a8d679f702302',
+  serviceName: 'flickrhub-worker',
+  serviceEnv: 'local',
+};
+
+const randomId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+};
+
+const loadConfig = () => {
+  const apiUrl = process.env.OBS_API_URL || defaults.apiUrl;
+  const apiKey = process.env.OBS_API_KEY || defaults.apiKey;
+  const serviceName = process.env.SERVICE_NAME || defaults.serviceName;
+  const serviceEnv = process.env.SERVICE_ENV || process.env.NODE_ENV || defaults.serviceEnv;
+  const tenantId = process.env.TENANT_ID || undefined;
+  const debug = process.env.OBS_DEBUG === 'true';
+  return { apiUrl, apiKey, serviceName, serviceEnv, tenantId, debug };
+};
+
+const sendObservabilityLog = async ({
+  level = 'INFO',
+  kind = 'SYSTEM',
+  category = 'flickr.api',
+  event = 'flickr_api_call',
+  message = '',
+  context = {},
+  payload = {},
+  tags = ['flickr', 'api'],
+}) => {
+  // Skip if disabled explicitly
+  if (process.env.OBS_ENABLED === 'false') return;
+
+  const { apiUrl, apiKey, serviceName, serviceEnv, tenantId, debug } = loadConfig();
+
+  const body = {
+    schema_version: 1,
+    log_id: randomId(),
+    timestamp: new Date().toISOString(),
+    level,
+    service: serviceName,
+    environment: serviceEnv,
+    kind,
+    category,
+    event,
+    message,
+    context,
+    payload,
+    host: {
+      hostname: os.hostname(),
+      ip: (os.networkInterfaces().eth0 || []).find((i) => i.family === 'IPv4')?.address,
+      container_id: process.env.HOSTNAME,
+    },
+    tags,
+  };
+
+  if (tenantId) body.tenant_id = tenantId;
+
+  try {
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': apiKey,
+      },
+      body: JSON.stringify(body),
+    });
+    const text = debug ? await res.text() : null;
+    if (!res.ok) {
+      console.warn(`[observability] failed ${res.status}${text ? ` body=${text}` : ''}`);
+      return { ok: false, status: res.status, body: text || null };
+    } else if (debug) {
+      console.log(`[observability] ok ${res.status}${text ? ` body=${text}` : ''}`);
+    }
+    return { ok: true, status: res.status, body: text || null };
+  } catch (err) {
+    console.warn('[observability] error:', err.message || err);
+    return { ok: false, error: err.message || String(err) };
+  }
+};
+
+module.exports = {
+  sendObservabilityLog,
+};

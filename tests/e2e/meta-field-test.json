@@ -1,0 +1,70 @@
+{
+  "name": "Meta Field Pass-Through Test",
+  "description": "Validates that meta field is correctly passed through from request to callback",
+  "payload": {
+    "method": "flickr.contacts.getList",
+    "params": {
+      "per_page": 500,
+      "page": 2
+    },
+    "target": "rest",
+    "meta": {
+      "session_id": "test-session-123",
+      "job_type": "contacts_page",
+      "page": 2,
+      "per_page": 500,
+      "custom_data": {
+        "user": "xyz",
+        "tags": ["important", "test"]
+      }
+    }
+  },
+  "validations": [
+    {
+      "description": "Callback should have job_id field",
+      "type": "exists",
+      "path": "job_id"
+    },
+    {
+      "description": "State should be completed",
+      "type": "equals",
+      "path": "state",
+      "expected": "completed"
+    },
+    {
+      "description": "Meta field should exist",
+      "type": "exists",
+      "path": "meta"
+    },
+    {
+      "description": "Session ID should match",
+      "type": "equals",
+      "path": "meta.session_id",
+      "expected": "test-session-123"
+    },
+    {
+      "description": "Job type should match",
+      "type": "equals",
+      "path": "meta.job_type",
+      "expected": "contacts_page"
+    },
+    {
+      "description": "Custom user field should match",
+      "type": "equals",
+      "path": "meta.custom_data.user",
+      "expected": "xyz"
+    },
+    {
+      "description": "First tag should be 'important'",
+      "type": "equals",
+      "path": "meta.custom_data.tags[0]",
+      "expected": "important"
+    },
+    {
+      "description": "Second tag should be 'test'",
+      "type": "equals",
+      "path": "meta.custom_data.tags[1]",
+      "expected": "test"
+    }
+  ]
+}

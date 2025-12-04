@@ -1,0 +1,28 @@
+{
+  "name": "Simple Flickr API Test",
+  "description": "Basic test with minimal meta field",
+  "payload": {
+    "method": "flickr.test.echo",
+    "params": {
+      "name": "Hello FlickrHub"
+    },
+    "target": "rest",
+    "meta": {
+      "test_id": "simple-test-001"
+    }
+  },
+  "validations": [
+    {
+      "description": "Job should complete",
+      "type": "equals",
+      "path": "state",
+      "expected": "completed"
+    },
+    {
+      "description": "Meta test_id should match",
+      "type": "equals",
+      "path": "meta.test_id",
+      "expected": "simple-test-001"
+    }
+  ]
+}

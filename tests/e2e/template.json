@@ -1,0 +1,35 @@
+{
+  "name": "Test Template",
+  "description": "Template for creating E2E tests",
+  "payload": {
+    "method": "flickr.method.name",
+    "params": {
+      "param1": "value1",
+      "param2": "value2"
+    },
+    "target": "rest",
+    "meta": {
+      "session_id": "your-session-id",
+      "custom_field": "your-value"
+    }
+  },
+  "validations": [
+    {
+      "description": "Job should complete successfully",
+      "type": "equals",
+      "path": "state",
+      "expected": "completed"
+    },
+    {
+      "description": "Meta field should exist",
+      "type": "exists",
+      "path": "meta"
+    },
+    {
+      "description": "Session ID should match",
+      "type": "equals",
+      "path": "meta.session_id",
+      "expected": "your-session-id"
+    }
+  ]
+}
