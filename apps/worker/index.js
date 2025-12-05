@@ -220,10 +220,10 @@ const start = async () => {
       await sendObservabilityLog({
         level: 'ERROR',
         kind: 'SYSTEM',
-        event: 'worker_startup_error',
-        message: `RabbitMQ connection failed: ${err.message}`,
+        event: 'worker_rabbitmq_connect_error',
+        message: `RabbitMQ connection failed at startup: ${err.message}`,
         context: { queue: queueName, rabbit_url: rabbitUrl },
-        payload: { error: err.message },
+        payload: { error: err.message, stack: err.stack },
         tags: ['worker', 'startup', 'error', 'rabbitmq'],
       }).catch(() => { });
       throw err;
@@ -235,10 +235,10 @@ const start = async () => {
       await sendObservabilityLog({
         level: 'ERROR',
         kind: 'SYSTEM',
-        event: 'worker_startup_error',
-        message: `MongoDB connection failed: ${err.message}`,
+        event: 'worker_mongodb_connect_error',
+        message: `MongoDB connection failed at startup: ${err.message}`,
         context: { queue: queueName },
-        payload: { error: err.message },
+        payload: { error: err.message, stack: err.stack },
         tags: ['worker', 'startup', 'error', 'mongodb'],
       }).catch(() => { });
       throw err;
@@ -250,10 +250,10 @@ const start = async () => {
       await sendObservabilityLog({
         level: 'ERROR',
         kind: 'SYSTEM',
-        event: 'worker_startup_error',
-        message: `Redis connection failed: ${err.message}`,
+        event: 'worker_redis_connect_error',
+        message: `Redis connection failed at startup: ${err.message}`,
         context: { queue: queueName, redis_url: redisUrl },
-        payload: { error: err.message },
+        payload: { error: err.message, stack: err.stack },
         tags: ['worker', 'startup', 'error', 'redis'],
       }).catch(() => { });
       throw err;
