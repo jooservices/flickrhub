@@ -1,13 +1,28 @@
+---
+title: "Observability Logging Gaps Analysis"
+type: "guideline"
+what: "Analysis of missing observability logging points in FlickrHub system"
+why: "Identify gaps in observability coverage to improve system monitoring and debugging"
+how: "Review this analysis to understand what observability logs are missing and prioritize implementation"
+owner: "Engineering Team"
+status: "approved"
+last_updated: "2024-12-04"
+tags: ['observability', 'logging', 'gaps', 'analysis']
+ai_semantics:
+  layer: "archive"
+  relates_to: ['observability', 'logging', 'monitoring', 'debugging']
+---
+
 # Observability Logging Gaps Analysis
 
 **Date:** 2025-12-03  
-**Purpose:** Tìm các điểm cần Observability logging nhưng chưa được implement
+**Purpose:** Find points that need Observability logging but have not been implemented
 
 ---
 
-## 1. Observability Logging Hiện Tại
+## 1. Current Observability Logging
 
-### ✅ Đã Có Observability Logs
+### ✅ Existing Observability Logs
 
 #### Worker (`apps/worker/index.js`)
 
@@ -29,9 +44,9 @@
 
 ---
 
-## 2. Các Điểm Thiếu Observability Logging
+## 2. Missing Observability Logging Points
 
-### 🔴 CRITICAL - Cần Implement Ngay
+### 🔴 CRITICAL - Implement Immediately
 
 #### 2.1. Authentication Flows (API)
 
@@ -40,16 +55,16 @@
 **Missing Logs:**
 
 1. **`/api/v1/auth/start` endpoint:**
-   - ❌ **auth_start_success** - OAuth start thành công
+   - ❌ **auth_start_success** - OAuth start successful
    - ❌ **auth_start_failure** - OAuth start failed (Flickr API error, Redis error)
 
 2. **`/api/v1/auth/complete` endpoint:**
-   - ❌ **auth_complete_success** - OAuth complete thành công (user created)
+   - ❌ **auth_complete_success** - OAuth complete successful (user created)
    - ❌ **auth_complete_failure** - OAuth complete failed (invalid token, Flickr API error)
    - ❌ **auth_invalid_state** - Invalid state/token error
 
 3. **`/api/v1/auth/callback` endpoint:**
-   - ❌ **auth_callback_success** - OAuth callback thành công
+   - ❌ **auth_callback_success** - OAuth callback successful
    - ❌ **auth_callback_failure** - OAuth callback failed
 
 **Code Locations:**
@@ -58,7 +73,7 @@
 - `apps/api/server.js:82-104` - `/api/v1/auth/complete` (POST)
 - `apps/api/server.js:106-128` - `/api/v1/auth/callback` (GET)
 
-**Impact:** Không thể track authentication flows, security issues, failed auth attempts
+**Impact:** Cannot track authentication flows, security issues, failed auth attempts
 
 ---
 
@@ -72,7 +87,7 @@
 2. ❌ **job_status_not_found** - Job not found error
 3. ❌ **job_status_unauthorized** - User ownership mismatch
 
-**Impact:** Không thể track job status queries, unauthorized access attempts
+**Impact:** Cannot track job status queries, unauthorized access attempts
 
 ---
 
@@ -90,7 +105,7 @@
 2. ❌ **api_unhandled_error** - Unhandled exceptions (500 errors)
    - Line 102, 126, 197, 221: Generic throw err
 
-**Impact:** Không thể track client errors và server errors
+**Impact:** Cannot track client errors and server errors
 
 ---
 
@@ -105,7 +120,7 @@
 3. ❌ **auth_redis_store_failed** - Redis storage failed
 4. ❌ **auth_token_store_failed** - MongoDB token storage failed
 
-**Impact:** Không thể debug authentication failures
+**Impact:** Cannot debug authentication failures
 
 ---
 
@@ -126,7 +141,7 @@
    - ❌ **job_store_update_error** - Job update failed
    - ❌ **job_store_read_error** - Job retrieval failed
 
-**Impact:** Không thể track database issues
+**Impact:** Cannot track database issues
 
 ---
 
@@ -140,7 +155,7 @@
 2. ❌ **rabbitmq_channel_error** - Channel creation/error
 3. ❌ **queue_assert_error** - Queue assertion failed
 
-**Impact:** Không thể track RabbitMQ connectivity issues
+**Impact:** Cannot track RabbitMQ connectivity issues
 
 ---
 
@@ -155,7 +170,7 @@
 3. ❌ **worker_mongodb_connect_error** - MongoDB connection failed at startup
 4. ❌ **worker_redis_connect_error** - Redis connection failed at startup
 
-**Impact:** Không thể track worker startup failures
+**Impact:** Cannot track worker startup failures
 
 ---
 
@@ -168,7 +183,7 @@
 1. ❌ **rate_limit_exceeded** - Per-second rate limit exceeded
    - Line 312-322: Rate check fails, job requeued
 
-**Impact:** Không thể track rate limiting events
+**Impact:** Cannot track rate limiting events
 
 ---
 
@@ -178,11 +193,11 @@
 
 **Missing Logs:**
 
-1. ❌ **cache_hit** - Cache hit (optional, có console.log nhưng không có OBS)
+1. ❌ **cache_hit** - Cache hit (optional, has console.log but no OBS)
 2. ❌ **cache_miss** - Cache miss
 3. ❌ **cache_set_error** - Cache write failed
 
-**Impact:** Không thể track cache performance metrics
+**Impact:** Cannot track cache performance metrics
 
 ---
 
@@ -198,7 +213,7 @@
    - RabbitMQ connection
    - Redis connection
 
-**Impact:** Không thể track API startup failures
+**Impact:** Cannot track API startup failures
 
 ---
 
@@ -209,9 +224,9 @@
 **Missing Logs:**
 
 1. ❌ **api_shutdown_error** - Graceful shutdown failed
-2. ❌ **worker_shutdown_error** - Worker shutdown failed (có try/catch nhưng không log OBS)
+2. ❌ **worker_shutdown_error** - Worker shutdown failed (has try/catch but no OBS log)
 
-**Impact:** Không thể track shutdown issues
+**Impact:** Cannot track shutdown issues
 
 ---
 
@@ -251,9 +266,9 @@
 **Missing Logs:**
 
 1. ❌ **request_validation_failed** - Job validation failed
-   - Có validation nhưng không log observability
+   - Has validation but no observability log
 
-**Impact:** Không thể track invalid requests
+**Impact:** Cannot track invalid requests
 
 ---
 
@@ -265,13 +280,13 @@
 
 **Missing Logs:**
 
-1. ❌ **health_check** - Health check requests (optional, có thể skip)
+1. ❌ **health_check** - Health check requests (optional, can skip)
 
-**Impact:** Minimal - health checks thường không cần OBS log
+**Impact:** Minimal - health checks usually don't need OBS log
 
 ---
 
-## 3. Tổng Kết Các Gaps
+## 3. Summary of Gaps
 
 ### Missing Observability Logs Summary
 
@@ -347,4 +362,4 @@
 
 ---
 
-**Next Steps:** Implement missing observability logs theo priority order.
+**Next Steps:** Implement missing observability logs according to priority order.

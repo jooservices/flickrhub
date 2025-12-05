@@ -1,6 +1,21 @@
-# Request/Payload Summary - Quick Reference
+---
+title: "Request/Payload Flow - Quick Reference"
+type: "guideline"
+what: "Quick reference for request and payload formats at each stage of the FlickrHub flow"
+why: "Enable developers to understand data transformation through the system"
+how: "Reference this document to see exact payload structures at each stage"
+owner: "API Team"
+status: "approved"
+last_updated: "2024-12-04"
+tags: ['api', 'reference', 'payload', 'data-flow']
+ai_semantics:
+  layer: "data"
+  relates_to: ['api', 'payload', 'rabbitmq', 'callbacks', 'data-flow']
+---
 
-Tóm tắt nhanh các request/payload trong flow.
+# Request/Payload Flow - Quick Reference
+
+Quick summary of requests/payloads in the flow.
 
 ---
 

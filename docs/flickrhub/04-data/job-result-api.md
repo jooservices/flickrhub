@@ -1,19 +1,34 @@
-# Job Result API - Hiện Trạng
+---
+title: "Job Result API"
+type: "guideline"
+what: "API reference for retrieving job status and results via jobId"
+why: "Enable clients to check job status and retrieve Flickr API results"
+how: "Use POST endpoint with job_id and user_id to query job status"
+owner: "API Team"
+status: "approved"
+last_updated: "2024-12-04"
+tags: ['api', 'reference', 'jobs', 'status']
+ai_semantics:
+  layer: "data"
+  relates_to: ['api', 'jobs', 'status', 'results']
+---
 
-## API Hiện Tại
+# Job Result API
+
+## Current API
 
 ### POST /api/v1/flickr/jobs/status
 
 **Endpoint:** `POST /api/v1/flickr/jobs/status`
 
-**Purpose:** Lấy job status và result thông qua jobId
+**Purpose:** Get job status and result via jobId
 
 **Request Body:**
 
 ```json
 {
-  "job_id": "e6b6634c-e07c-43f0-88b3-9516590aad77",
-  "user_id": "09b4e414-4f70-4226-9ee8-f9e815fc2539"
+  "job_id": "<job-id>",
+  "user_id": "<your-user-id>"
 }
 ```
 
@@ -23,7 +38,7 @@
 {
   "request_id": "req-xxx",
   "data": {
-    "id": "e6b6634c-e07c-43f0-88b3-9516590aad77",
+    "id": "<job-id>",
     "state": "completed",
     "returnvalue": {
       "from_cache": false,
@@ -47,13 +62,13 @@
 }
 ```
 
-**Response khi Job Failed:**
+**Response when Job Failed:**
 
 ```json
 {
   "request_id": "req-xxx",
   "data": {
-    "id": "job-id",
+    "id": "<job-id>",
     "state": "failed",
     "returnvalue": null,
     "failedReason": "Token not found for userId=...",
@@ -71,19 +86,19 @@
 
 ---
 
-## Đặc Điểm
+## Features
 
-### ✅ Có:
+### ✅ Includes:
 
-1. **User Ownership Check:** Đảm bảo chỉ user tạo job mới lấy được result
-2. **Full Status Info:** Trả về state, returnvalue, failedReason, stacktrace
-3. **Result Structure:** Có `flickr` response, `observability`, `from_cache` flag
+1. **User Ownership Check:** Ensures only the user who created the job can retrieve the result
+2. **Full Status Info:** Returns state, returnvalue, failedReason, stacktrace
+3. **Result Structure:** Includes `flickr` response, `observability`, `from_cache` flag
 
-### ⚠️ Hạn chế:
+### ⚠️ Limitations:
 
-1. **POST Request:** Không phải GET (RESTful hơn nếu là GET)
-2. **Cần user_id:** Phải provide user_id để verify ownership
-3. **Full Response:** Trả về nhiều info, không chỉ result thuần
+1. **POST Request:** Not GET (more RESTful if it were GET)
+2. **Requires user_id:** Must provide user_id to verify ownership
+3. **Full Response:** Returns much info, not just the result alone
 
 ---
 
@@ -177,10 +192,10 @@ async status({ jobId, userId }) {
 
 ### Job States
 
-- `"queued"`: Job đang trong queue
-- `"retrying"`: Job đang retry
-- `"completed"`: Job hoàn thành thành công
-- `"failed"`: Job thất bại sau tất cả retries
+- `"queued"`: Job is in queue
+- `"retrying"`: Job is retrying
+- `"completed"`: Job completed successfully
+- `"failed"`: Job failed after all retries
 
 ---
 
@@ -192,8 +207,8 @@ async status({ jobId, userId }) {
 curl -X POST http://localhost:3000/api/v1/flickr/jobs/status \
   -H "Content-Type: application/json" \
   -d '{
-    "job_id": "e6b6634c-e07c-43f0-88b3-9516590aad77",
-    "user_id": "09b4e414-4f70-4226-9ee8-f9e815fc2539"
+    "job_id": "<job-id>",
+    "user_id": "<your-user-id>"
   }'
 ```
 
@@ -204,8 +219,8 @@ const response = await fetch('http://localhost:3000/api/v1/flickr/jobs/status', 
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    job_id: 'e6b6634c-e07c-43f0-88b3-9516590aad77',
-    user_id: '09b4e414-4f70-4226-9ee8-f9e815fc2539',
+    job_id: '<job-id>',
+    user_id: '<your-user-id>',
   }),
 });
 
@@ -221,8 +236,8 @@ import requests
 response = requests.post(
     'http://localhost:3000/api/v1/flickr/jobs/status',
     json={
-        'job_id': 'e6b6634c-e07c-43f0-88b3-9516590aad77',
-        'user_id': '09b4e414-4f70-4226-9ee8-f9e815fc2539'
+        'job_id': '<job-id>',
+        'user_id': '<your-user-id>'
     }
 )
 
@@ -232,37 +247,37 @@ result = data['data']['returnvalue']['flickr']  # Flickr API response
 
 ---
 
-## Kết Luận
+## Conclusion
 
-### ✅ Có API để lấy result qua jobId:
+### ✅ There is an API to get result via jobId:
 
 - **Endpoint:** `POST /api/v1/flickr/jobs/status`
-- **Yêu cầu:** `job_id` + `user_id` (ownership check)
-- **Trả về:** Full job status + result trong `returnvalue.flickr`
+- **Requirements:** `job_id` + `user_id` (ownership check)
+- **Returns:** Full job status + result in `returnvalue.flickr`
 
-### 📝 Lưu ý:
+### 📝 Notes:
 
-1. Phải provide `user_id` để verify ownership
-2. Là POST request (không phải GET)
-3. Result nằm trong `data.returnvalue.flickr`
-4. Có thể check `state` để biết job đã complete chưa
+1. Must provide `user_id` to verify ownership
+2. Is a POST request (not GET)
+3. Result is located in `data.returnvalue.flickr`
+4. Can check `state` to know if job has completed
 
 ---
 
-## Đề Xuất (Nếu Cần)
+## Suggestions (If Needed)
 
-Nếu muốn có API đơn giản hơn:
+If you want a simpler API:
 
 1. **GET endpoint:** `GET /api/v1/flickr/jobs/:jobId`
-   - Chỉ cần jobId trong URL
-   - Vẫn có ownership check nhưng có thể dùng API key/token
+   - Only need jobId in URL
+   - Still has ownership check but can use API key/token
 
 2. **Result-only endpoint:** `GET /api/v1/flickr/jobs/:jobId/result`
-   - Chỉ trả về result, không có status info
+   - Only returns result, no status info
 
-3. **Public job access:** Với shareable token hoặc public job IDs
+3. **Public job access:** With shareable token or public job IDs
 
 ---
 
-**Current Status:** ✅ API đã có sẵn  
-**Recommendation:** Có thể cải thiện thêm nếu cần
+**Current Status:** ✅ API is already available  
+**Recommendation:** Can be improved further if needed
