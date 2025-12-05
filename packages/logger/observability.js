@@ -2,7 +2,7 @@ const os = require('os');
 
 const defaults = {
   apiUrl: 'http://observability.jooservices.com/api/v1/logs',
-  apiKey: '2b989e235eb50194d6ca8932955861863ac0b89a1c60634e991a8d679f702302',
+  // apiKey: No default - must be provided via OBS_API_KEY environment variable
   serviceName: 'flickrhub-worker',
   serviceEnv: 'local',
 };
@@ -18,7 +18,10 @@ const randomId = () => {
 
 const loadConfig = () => {
   const apiUrl = process.env.OBS_API_URL || defaults.apiUrl;
-  const apiKey = process.env.OBS_API_KEY || defaults.apiKey;
+  const apiKey = process.env.OBS_API_KEY; // Required - no default for security
+  if (!apiKey) {
+    throw new Error('OBS_API_KEY environment variable is required');
+  }
   const serviceName = process.env.SERVICE_NAME || defaults.serviceName;
   const serviceEnv = process.env.SERVICE_ENV || process.env.NODE_ENV || defaults.serviceEnv;
   const tenantId = process.env.TENANT_ID || undefined;
