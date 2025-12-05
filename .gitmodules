@@ -1,0 +1,3 @@
+[submodule "docs/master"]
+	path = docs/master
+	url = git@github.com:jooservices/architecture-center.git
