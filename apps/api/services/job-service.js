@@ -72,7 +72,7 @@ class JobService {
         kind: 'SYSTEM',
         event: 'queue_publish_error',
         message: `Failed to publish job ${jobId} to ${queueName}: ${err.message}`,
-        context: { user_id: userId, job_id: jobId, queue: queueName },
+        context: { user_id: userId, job_id: jobId, queue: queueName, trace_id: traceId },
         payload: { method, params, error: err.message },
         tags: ['queue', 'publish', 'error'],
       }).catch(() => { });
