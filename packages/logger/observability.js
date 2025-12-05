@@ -72,14 +72,12 @@ const sendObservabilityLog = async ({
     });
     const text = debug ? await res.text() : null;
     if (!res.ok) {
-      console.warn(`[observability] failed ${res.status}${text ? ` body=${text}` : ''}`);
+      // OBS logging failed - silently handle to avoid console output
       return { ok: false, status: res.status, body: text || null };
-    } else if (debug) {
-      console.log(`[observability] ok ${res.status}${text ? ` body=${text}` : ''}`);
     }
     return { ok: true, status: res.status, body: text || null };
   } catch (err) {
-    console.warn('[observability] error:', err.message || err);
+    // OBS logging error - silently handle to avoid console output
     return { ok: false, error: err.message || String(err) };
   }
 };

@@ -31,14 +31,31 @@ const main = async () => {
   const client = await store._ensureConnection();
   const docs = await store.collection.find({}).project({ token: 0 }).toArray();
   if (!docs.length) {
-    console.log('No tokens found.');
+    await sendObservabilityLog({
+      level: 'INFO',
+      kind: 'SYSTEM',
+      event: 'cli_list_tokens_empty',
+      message: 'No tokens found',
+      context: { tenant_id: process.env.TENANT_ID },
+      tags: ['cli', 'list-tokens'],
+    }).catch(() => { });
   } else {
-    console.log('Tokens:');
-    docs.forEach((doc) =>
-      console.log(
-        `- user_id=${doc.user_id} (_id=${doc._id}) created=${doc.createdAt || 'n/a'} updated=${doc.updatedAt || 'n/a'}`
-      )
-    );
+    await sendObservabilityLog({
+      level: 'INFO',
+      kind: 'SYSTEM',
+      event: 'cli_list_tokens_found',
+      message: `Found ${docs.length} token(s)`,
+      context: { tenant_id: process.env.TENANT_ID, token_count: docs.length },
+      payload: {
+        tokens: docs.map((doc) => ({
+          user_id: doc.user_id,
+          _id: doc._id,
+          created: doc.createdAt || null,
+          updated: doc.updatedAt || null,
+        })),
+      },
+      tags: ['cli', 'list-tokens'],
+    }).catch(() => { });
   }
   await sendObservabilityLog({
     level: 'INFO',
@@ -52,7 +69,6 @@ const main = async () => {
 };
 
 main().catch((err) => {
-  console.error('Failed to list tokens:', err.message || err);
   sendObservabilityLog({
     level: 'ERROR',
     kind: 'SYSTEM',
