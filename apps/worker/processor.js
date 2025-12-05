@@ -131,6 +131,19 @@ const createProcessor = ({
             return cacheResult;
         }
 
+        await sendObservabilityLog({
+            level: 'INFO',
+            kind: 'SYSTEM',
+            event: 'cache_miss',
+            message: `${method} cache miss`,
+            context: { user_id: userId, job_id: jobId, trace_id: traceId },
+            payload: {
+                flickr_method: method,
+                params,
+            },
+            tags: ['cache', 'miss'],
+        }).catch(() => { });
+
         const start = Date.now();
         try {
             const result = await flickr.callRest(method, params, accessToken, accessSecret);

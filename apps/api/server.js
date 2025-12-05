@@ -437,7 +437,17 @@ const buildServer = async () => {
     }
   });
 
-  app.get('/health', async () => ({ status: 'ok' }));
+  app.get('/health', async (request) => {
+    sendObservabilityLog({
+      level: 'INFO',
+      kind: 'SYSTEM',
+      event: 'health_check',
+      message: 'Health check requested',
+      context: { request_id: request.id, ip: request.ip },
+      tags: ['api', 'health'],
+    }).catch(() => { });
+    return { status: 'ok' };
+  });
 
   const shutdown = async () => {
     try {

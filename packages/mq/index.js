@@ -1,3 +1,5 @@
+const { sendObservabilityLog } = require('../logger/observability');
+
 const QUEUE_NAMES = {
   rest: 'flickr_rest',
   upload: 'flickr_upload',
@@ -22,10 +24,23 @@ const validateJob = (job) => {
 };
 
 const assertQueue = async (channel, name, { durable = true, lazy = true } = {}) => {
-  await channel.assertQueue(sanitizeName(name), {
-    durable,
-    arguments: lazy ? { 'x-queue-mode': 'lazy' } : undefined,
-  });
+  try {
+    await channel.assertQueue(sanitizeName(name), {
+      durable,
+      arguments: lazy ? { 'x-queue-mode': 'lazy' } : undefined,
+    });
+  } catch (err) {
+    await sendObservabilityLog({
+      level: 'ERROR',
+      kind: 'SYSTEM',
+      event: 'queue_assert_error',
+      message: `Queue assertion failed for ${name}: ${err.message}`,
+      context: { queue_name: name },
+      payload: { error: err.message, stack: err.stack },
+      tags: ['queue', 'error', 'assert'],
+    }).catch(() => { });
+    throw err;
+  }
 };
 
 const publishJob = async (channel, queueName, payload, headers = {}) => {
