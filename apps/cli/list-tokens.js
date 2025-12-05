@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { TokenStore } = require('../../packages/core/token-store');
+const { sendObservabilityLog } = require('../../packages/logger/observability');
 
 const loadEnvFile = (filePath) => {
   if (!fs.existsSync(filePath)) return;
@@ -17,6 +18,15 @@ const loadEnvFile = (filePath) => {
 
 const main = async () => {
   loadEnvFile(path.join(process.cwd(), '.env'));
+  await sendObservabilityLog({
+    level: 'INFO',
+    kind: 'SYSTEM',
+    event: 'cli_list_tokens_start',
+    message: 'CLI list-tokens started',
+    context: { tenant_id: process.env.TENANT_ID },
+    tags: ['cli', 'list-tokens', 'start'],
+  }).catch(() => { });
+
   const store = new TokenStore();
   const client = await store._ensureConnection();
   const docs = await store.collection.find({}).project({ token: 0 }).toArray();
@@ -30,10 +40,26 @@ const main = async () => {
       )
     );
   }
+  await sendObservabilityLog({
+    level: 'INFO',
+    kind: 'SYSTEM',
+    event: 'cli_list_tokens_success',
+    message: 'CLI list-tokens completed',
+    context: { tenant_id: process.env.TENANT_ID, token_count: docs.length },
+    tags: ['cli', 'list-tokens', 'success'],
+  }).catch(() => { });
   if (store.client && client) await store.client.close();
 };
 
 main().catch((err) => {
   console.error('Failed to list tokens:', err.message || err);
-  process.exit(1);
+  sendObservabilityLog({
+    level: 'ERROR',
+    kind: 'SYSTEM',
+    event: 'cli_list_tokens_failure',
+    message: err.message || String(err),
+    context: { tenant_id: process.env.TENANT_ID },
+    payload: { error: err.message || String(err), stack: err.stack ? err.stack.substring(0, 1000) : null },
+    tags: ['cli', 'list-tokens', 'failure'],
+  }).catch(() => { }).finally(() => process.exit(1));
 });

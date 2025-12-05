@@ -36,9 +36,6 @@ const sendObservabilityLog = async ({
   payload = {},
   tags = ['flickr', 'api'],
 }) => {
-  // Skip if disabled explicitly
-  if (process.env.OBS_ENABLED === 'false') return;
-
   const { apiUrl, apiKey, serviceName, serviceEnv, tenantId, debug } = loadConfig();
 
   const body = {

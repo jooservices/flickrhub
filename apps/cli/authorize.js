@@ -3,6 +3,7 @@ const path = require('path');
 const readline = require('readline');
 const { FlickrClient } = require('../../packages/flickr-client');
 const { TokenStore } = require('../../packages/core/token-store');
+const { sendObservabilityLog } = require('../../packages/logger/observability');
 
 const envPath = path.join(process.cwd(), '.env');
 
@@ -40,11 +41,29 @@ const parseTokenIdArg = () => {
 const main = async () => {
   loadEnvFile(envPath);
 
+  await sendObservabilityLog({
+    level: 'INFO',
+    kind: 'SYSTEM',
+    event: 'cli_authorize_start',
+    message: 'CLI authorize started',
+    context: { tenant_id: process.env.TENANT_ID },
+    tags: ['cli', 'authorize', 'start'],
+  }).catch(() => { });
+
   const apiKey = process.env.FLICKR_API_KEY;
   const apiSecret = process.env.FLICKR_API_SECRET;
 
   if (!apiKey || !apiSecret) {
     console.error('Missing FLICKR_API_KEY or FLICKR_API_SECRET. Add them to .env.');
+    await sendObservabilityLog({
+      level: 'ERROR',
+      kind: 'SYSTEM',
+      event: 'cli_authorize_error',
+      message: 'Missing Flickr API credentials',
+      context: { tenant_id: process.env.TENANT_ID },
+      payload: { error: 'missing_api_credentials' },
+      tags: ['cli', 'authorize', 'error'],
+    }).catch(() => { });
     process.exit(1);
   }
 
@@ -61,6 +80,15 @@ const main = async () => {
   const verifier = await prompt('\nEnter the verifier code: ');
   if (!verifier) {
     console.error('No verifier provided, aborting.');
+    await sendObservabilityLog({
+      level: 'ERROR',
+      kind: 'SYSTEM',
+      event: 'cli_authorize_error',
+      message: 'Verifier missing',
+      context: { tenant_id: process.env.TENANT_ID },
+      payload: { error: 'missing_verifier' },
+      tags: ['cli', 'authorize', 'error'],
+    }).catch(() => { });
     process.exit(1);
   }
 
@@ -102,9 +130,26 @@ const main = async () => {
   } catch (error) {
     console.warn('REST quick check failed:', error.message);
   }
+
+  await sendObservabilityLog({
+    level: 'INFO',
+    kind: 'SYSTEM',
+    event: 'cli_authorize_success',
+    message: 'CLI authorize completed successfully',
+    context: { tenant_id: process.env.TENANT_ID },
+    tags: ['cli', 'authorize', 'success'],
+  }).catch(() => { });
 };
 
 main().catch((error) => {
   console.error('CLI failed:', error);
-  process.exit(1);
+  sendObservabilityLog({
+    level: 'ERROR',
+    kind: 'SYSTEM',
+    event: 'cli_authorize_failure',
+    message: error.message,
+    context: { tenant_id: process.env.TENANT_ID },
+    payload: { error: error.message, stack: error.stack ? error.stack.substring(0, 1000) : null },
+    tags: ['cli', 'authorize', 'failure'],
+  }).catch(() => { }).finally(() => process.exit(1));
 });
