@@ -1,3 +1,18 @@
+---
+title: "Getting Started with FlickrHub"
+type: "guideline"
+what: "Quick start guide for setting up and using FlickrHub"
+why: "Help new users get up and running with FlickrHub quickly"
+how: "Follow the installation and setup steps to configure your environment"
+owner: "Documentation Team"
+status: "approved"
+last_updated: "2024-12-04"
+tags: ['getting-started', 'onboarding', 'setup', 'installation']
+ai_semantics:
+  layer: "technical"
+  relates_to: ['installation', 'setup', 'docker', 'oauth']
+---
+
 # Getting Started with FlickrHub
 
 Welcome to FlickrHub! This guide will help you get up and running quickly.

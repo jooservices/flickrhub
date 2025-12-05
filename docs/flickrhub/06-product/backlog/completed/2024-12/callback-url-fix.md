@@ -1,3 +1,18 @@
+---
+title: "Callback URL Fix - Implementation Summary"
+type: "guideline"
+what: "Completed feature implementation: Fixed callback URL handling in RabbitMQ message serialization"
+why: "Document the solution for callback URL being lost during job processing"
+how: "Reference this document to understand the fix implementation and testing results"
+owner: "Engineering Team"
+status: "approved"
+last_updated: "2024-12-04"
+tags: ['callback-url', 'bug-fix', 'completed', 'rabbitmq']
+ai_semantics:
+  layer: "product"
+  relates_to: ['callback', 'rabbitmq', 'job-processing', 'bug-fix']
+---
+
 # Callback URL Fix - Implementation Summary
 
 ## Issue Fixed

@@ -1,3 +1,18 @@
+---
+title: "Infrastructure Overview"
+type: "guideline"
+what: "Docker infrastructure setup, services, and deployment configuration for FlickrHub"
+why: "Enable operators to understand and manage the infrastructure stack"
+how: "Review service descriptions, dependencies, and configuration options"
+owner: "DevOps Team"
+status: "approved"
+last_updated: "2024-12-04"
+tags: ['infrastructure', 'docker', 'deployment', 'services']
+ai_semantics:
+  layer: "system"
+  relates_to: ['docker', 'rabbitmq', 'redis', 'mongodb', 'deployment']
+---
+
 # Infrastructure Overview
 
 ## Docker Infrastructure

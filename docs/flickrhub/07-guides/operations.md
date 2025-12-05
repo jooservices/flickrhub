@@ -1,3 +1,18 @@
+---
+title: "Operations Guide"
+type: "guideline"
+what: "Operations runbook with procedures, maintenance tasks, and troubleshooting for FlickrHub"
+why: "Enable operators to efficiently manage, maintain, and troubleshoot the FlickrHub system"
+how: "Follow step-by-step procedures for configuration, deployment, monitoring, and maintenance"
+owner: "Operations Team"
+status: "approved"
+last_updated: "2024-12-04"
+tags: ['operations', 'runbook', 'maintenance', 'troubleshooting']
+ai_semantics:
+  layer: "guides"
+  relates_to: ['operations', 'deployment', 'monitoring', 'maintenance']
+---
+
 # Operations Guide (WHAT / WHY / HOW)
 
 ## WHAT (user flow)

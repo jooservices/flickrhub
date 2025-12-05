@@ -1,3 +1,18 @@
+---
+title: "Architecture Details"
+type: "guideline"
+what: "System architecture, components, data flow, and design principles for FlickrHub"
+why: "Enable developers and architects to understand system design and component interactions"
+how: "Review components, data flows, routing, caching, and deployment architecture"
+owner: "Architecture Team"
+status: "approved"
+last_updated: "2024-12-04"
+tags: ['architecture', 'system-design', 'components', 'data-flow']
+ai_semantics:
+  layer: "architecture"
+  relates_to: ['api', 'workers', 'redis', 'mongodb', 'rabbitmq', 'observability']
+---
+
 # Architecture Details
 
 ## Components
