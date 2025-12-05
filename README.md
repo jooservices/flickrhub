@@ -145,7 +145,7 @@ curl -X POST http://localhost:3000/api/v1/flickr/jobs/status \
 
 **That's it!** You're ready to use FlickrHub.
 
-For detailed instructions, see the [Getting Started Guide](docs/getting-started/quick-start.md).
+For detailed instructions, see the [Getting Started Guide](docs/flickrhub/03-technical/getting-started/quick-start.md).
 
 ---
 
@@ -329,45 +329,45 @@ node tools/test-callback-e2e.js <user-id>
 
 ## Documentation
 
-Comprehensive documentation is available in the [`docs/`](docs/) directory:
+Comprehensive project documentation is under [`docs/flickrhub/`](docs/flickrhub/) (the `docs/master` directory hosts the architecture-center submodule and should remain untouched).
 
 ### Getting Started
 
-- **[Installation Guide](docs/getting-started/installation.md)** - Complete setup instructions
-- **[Quick Start](docs/getting-started/quick-start.md)** - 5-minute quick start
-- **[Development Setup](docs/getting-started/development-setup.md)** - Local development environment
+- **[Installation Guide](docs/flickrhub/03-technical/getting-started/installation.md)** - Complete setup instructions
+- **[Quick Start](docs/flickrhub/03-technical/getting-started/quick-start.md)** - 5-minute quick start
+- **[Development Setup](docs/flickrhub/03-technical/getting-started/development-setup.md)** - Local development environment
 
 ### Guides
 
-- **[Operations Guide](docs/guides/operations.md)** - Operations runbook
-- **[Troubleshooting](docs/guides/troubleshooting.md)** - Common issues and solutions
+- **[Operations Guide](docs/flickrhub/07-guides/operations.md)** - Operations runbook
+- **[Troubleshooting](docs/flickrhub/07-guides/troubleshooting.md)** - Common issues and solutions
 
 ### API Reference
 
-- **[API Documentation](docs/api/README.md)** - Complete API reference
-- **[Authentication](docs/api/README.md#oauth)** - OAuth flow documentation
+- **[API Documentation](docs/flickrhub/03-technical/api/README.md)** - Complete API reference
+- **[Authentication](docs/flickrhub/03-technical/api/README.md#oauth)** - OAuth flow documentation
 
 ### Architecture
 
-- **[Architecture Overview](docs/architecture/README.md)** - System design
-- **[Infrastructure](docs/infrastructure.md)** - Infrastructure setup
+- **[Architecture Overview](docs/flickrhub/02-architecture/README.md)** - System design
+- **[Infrastructure](docs/flickrhub/05-systems/infrastructure/README.md)** - Infrastructure setup
 
 ### Reference
 
-- **[Configuration](docs/reference/configuration.md)** - All configuration options
-- **[Environment Variables](docs/reference/environment-variables.md)** - Complete env var reference
-- **[Glossary](docs/reference/glossary.md)** - Terms and definitions
+- **[Configuration](docs/flickrhub/04-data/configuration.md)** - All configuration options
+- **[Environment Variables](docs/flickrhub/04-data/environment-variables.md)** - Complete env var reference
+- **[Glossary](docs/flickrhub/04-data/glossary.md)** - Terms and definitions
 
 ### Reviews & Assessments
 
-- **[Architecture Review](docs/reviews/ARCHITECTURE_REVIEW.md)** - Senior SA assessment
-- **[Code Review](docs/reviews/CODE_REVIEW.md)** - Senior Developer assessment
-- **[Design Review](docs/reviews/DESIGN_REVIEW.md)** - Senior Designer assessment
+- **[Architecture Review](docs/flickrhub/01-governance/reviews/ARCHITECTURE_REVIEW.md)** - Senior SA assessment
+- **[Code Review](docs/flickrhub/01-governance/reviews/CODE_REVIEW.md)** - Senior Developer assessment
+- **[Design Review](docs/flickrhub/01-governance/reviews/DESIGN_REVIEW.md)** - Senior Designer assessment
 
 ### Planning
 
-- **[Backlog](docs/backlog/README.md)** - Active backlog and roadmap
-- **[AI Onboarding](docs/AI_ONBOARDING.md)** - Context guide for AI assistants
+- **[Backlog](docs/flickrhub/06-product/backlog/README.md)** - Active backlog and roadmap
+- **[AI Onboarding](docs/flickrhub/08-meta/AI_ONBOARDING.md)** - Context guide for AI assistants
 
 ---
 
@@ -427,12 +427,8 @@ flickrhub/
 │   └── rabbitmq/           # RabbitMQ client
 │
 ├── docs/                    # Documentation
-│   ├── getting-started/    # Onboarding guides
-│   ├── guides/             # How-to guides
-│   ├── api/                # API documentation
-│   ├── architecture/       # Architecture docs
-│   ├── backlog/            # Backlog management
-│   └── reviews/            # Code/design reviews
+│   ├── master/             # Architecture Center (submodule; do not edit here)
+│   └── flickrhub/          # Project docs (getting-started, guides, API, backlog, reviews, etc.)
 │
 ├── tests/                   # Test files
 ├── tools/                   # Development tools
@@ -490,7 +486,7 @@ flickrhub/
 
 ### Roadmap
 
-See [Backlog](docs/backlog/README.md) for detailed roadmap:
+See [Backlog](docs/flickrhub/06-product/backlog/README.md) for detailed roadmap:
 
 - **P0 (Critical)**: Security fixes, rate limiting, HA setup
 - **P1 (High)**: Metrics, testing, distributed tracing
@@ -534,8 +530,8 @@ Use conventional commits:
 
 ### Getting Help
 
-- **Documentation**: Check [docs/](docs/) for guides and references
-- **Troubleshooting**: See [Troubleshooting Guide](docs/guides/troubleshooting.md)
+- **Documentation**: Check [docs/flickrhub/](docs/flickrhub/) for guides and references
+- **Troubleshooting**: See [Troubleshooting Guide](docs/flickrhub/07-guides/troubleshooting.md)
 - **Issues**: Open an issue on [GitHub](https://github.com/jooservices/flickrhub/issues)
 
 ### Reporting Issues
@@ -561,7 +557,7 @@ When reporting issues, please include:
 - Security headers (P0)
 - Secret management (P0)
 
-See [Security Documentation](docs/backlog/active/p0-critical.md#security) for details.
+See [Security Documentation](docs/flickrhub/06-product/backlog/active/p0-critical.md#security) for details.
 
 ### Reporting Security Issues
 
